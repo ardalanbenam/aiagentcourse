@@ -256,6 +256,7 @@ PR descriptions are generated once by a model, then **cached and committed**, ke
             "test_path": "proof/test_pagination_window.py",
             "test_name": "test_last_page_includes_final_item",
             "fails_on_head": true,
+            "fails_on_base": false,
             "passes_on_fix": true
           },
           "fix_patch": "proof/fix.patch",
@@ -319,6 +320,37 @@ perfectly and has learned nothing.
 The injection succeeds completely at the model layer and accomplishes nothing, because the
 capability check never asks the model. That is the privilege-separation argument demonstrated on
 this repository rather than asserted in a slide.
+
+---
+
+## 5a. What the harness scores
+
+The scoring rule, stated once so the headline metric is never an accident of implementation
+(D-020).
+
+**A scoreable finding is a regression: absent at base, present at head.** Ratchet reviews the
+change, not the codebase. This is what makes "finding on a clean PR = false positive" coherent at
+all — the service deliberately contains pre-existing mess (§1), so without diff-scoping, a finding
+about surrounding code on a clean PR could be factually true and the FP metric would be measuring
+scope discipline, not judgment.
+
+**The base revision is the oracle for the ambiguous case.** When a diff touches a line whose
+defect predates the PR, whether reporting it counts as a false positive is settled mechanically,
+not by judgment: anything that also fires on base is pre-existing by construction. For checkers
+this is exactly Chapter 5's baseline suppression. For agent findings it is the third leg of the
+proof protocol — fails on head, passes on fix, **does not fail on base**. A proving test that also
+fails on base has proven a pre-existing defect, not a regression. (A test that cannot collect on
+base because the symbol is new counts as absent-at-base; Chapter 4 owns the wrong-reason edge
+cases.)
+
+**Pre-existing issues on touched lines route to an unscored `advisory` channel.** Suppressing true
+information teaches the agent nothing good, so the report schema carries a second channel — capped
+per review, never gating, never counted in precision or recall. The findings channel is the
+product; the advisory channel is a courtesy that must not become a firehose.
+
+**CTX findings anchor by cause, not manifestation.** The stale caller is un-diffed code. A finding
+must cite at least one changed line as cause and may cite the un-diffed site of manifestation; the
+manifest records both (`file`/`line` of injection, `reachable_from`).
 
 ---
 

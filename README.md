@@ -147,15 +147,16 @@ solutions/chNN/         planned — reference implementation, kept deliberately 
 The five documents above are the complete Phase 0 deliverable. Nothing is built yet.
 
 Read `COURSE_PLAN.md` for the chapter plan and what changed from the original brief, `WORLD_SPEC.md`
-for the synthetic corpus design, and `DESIGN_DECISIONS.md` for the eighteen decisions behind both.
+for the synthetic corpus design, and `DESIGN_DECISIONS.md` for the twenty decisions behind both.
 `OPEN_QUESTIONS.md` records what is resolved and what is still running on a default.
 
 Four commitments made during review, recorded here because they are the ones that constrain
 everything downstream:
 
-- **Chapter 12 is never cut.** The deferral order is fixed now — Ch 3 → Ch 10 → Ch 14 → Ch 7 — with
-  a decision checkpoint at the end of week 4 rather than a judgement call at week 7. The isolation
-  boundary itself is built in Chapter 2, so the safety floor never sits in a deferrable chapter.
+- **Chapters 7 and 12 are never cut.** The deferral order is Ch 3 → Ch 10 → Ch 14 and ends there:
+  Chapter 7 proved load-bearing for both the security chapter's approval flow and a third of the
+  positive corpus (D-019). The week-4 decision checkpoint stands, and the isolation boundary is
+  built in Chapter 2, so the safety floor never sits in a deferrable chapter.
 - **You label the traces in Chapter 8.** Not an agent. The annotation tool ships with no model
   integration at all, because a rule that depends on willpower is not a rule.
 - **Ratchet never ships fixes.** Fix quality has no free ground truth, and free ground truth is the

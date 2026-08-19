@@ -76,6 +76,18 @@ silently absorbed.
 **Alternative.** Keep the binary framing for simplicity. Rejected — it produces a wrong answer, and
 the whole point of the chapter is the decision space.
 
+**Amendment — the compaction claim above is itself stale.** Raised in review, verified against the
+current platform docs, which now read: "the Python, TypeScript, and Ruby tool runners support
+automatic compaction … All three SDKs have deprecated this client-side option in favor of
+server-side context editing, which is available in every SDK." So `tool_runner` remains the middle
+rung — loop management, tool dispatch, error wrapping, and type safety are all still real — but
+context length is no longer part of its pitch; that job moved server-side, into the API's
+context-editing feature (platform.claude.com → build-with-claude → context-editing). Chapter 7's
+context-management section teaches server-side context editing plus the strategies that are
+client-side by nature (external state, sub-agents), not the deprecated path. This is the second
+stale-API catch recorded in this entry — which is the §9 fetch-current-docs rule doing its job, and
+the reason Chapter 7 re-fetches these docs at build time rather than trusting this paragraph.
+
 ---
 
 ### D-004 · Trace schema in Chapter 2, trace backend in Chapter 3
@@ -96,6 +108,11 @@ run in UTC or queries silently return wrong results. Your 24 GB machine handles 
 by an hour or two, and correct if you were certain of the backend and never intended to change it.
 Rejected because it couples your trace semantics to a vendor's schema, and because Chapter 13's
 frontier needs prompt-hash provenance that is cleaner to own yourself.
+
+**Amendment.** Confirmed in review: the Chapter 8 annotation tool reads the JSONL sink directly,
+never Langfuse. The one chapter the course cannot lose depends only on the sink that always
+exists, so cutting Chapter 3 cannot break error analysis — the sink abstraction is load-bearing
+here, not just tidy.
 
 ---
 
@@ -150,6 +167,9 @@ sample size is worse than no number at all.
 is not — precision is, and a corpus that cannot measure precision to a useful tolerance cannot
 support the claim the course is built to make.
 
+**Amended by D-020**, which makes explicit the diff-scoping rule this attribution silently assumed
+and gives the touched-but-already-bad case a mechanical answer.
+
 ---
 
 ### D-008 · Fourteen chapters with a declared critical path
@@ -165,6 +185,9 @@ than silently dropped.
 
 **Alternative.** Cut to eight by dropping Modules 4 and 5. Rejected — adversarial evaluation and the
 cost/accuracy frontier are both explicit deliverables, and the frontier is half of Deliverable 2.
+
+**Amended by D-019.** Core is eleven chapters (79 h) and depth is three (17 h): Chapter 7 was
+reclassified to core after review found it load-bearing twice over.
 
 ---
 
@@ -200,6 +223,14 @@ correct place for it — but the split needs to be expected rather than discover
 
 **Alternative.** Live calls in acceptance tests. Correct only if the chapter's subject genuinely is
 model behaviour, which is Chapter 13's territory, where the eval harness already handles it.
+
+**Amendment — accepted in review, with two conditions adopted.** First, a `make record` target
+re-runs the live path and rewrites cassettes, and every cassette stores the model id and prompt
+hash it was recorded against, so staleness is detectable rather than discovered. Re-record when
+the pinned model or SDK moves, when a tool schema changes, or when replay fails schema validation
+— cassettes rot when response shapes move, and a rotten cassette is a specification asserting the
+wrong thing. Second, the green-tests-≠-good-agent distinction is restated in every chapter README
+from Chapter 8 onward, where the temptation to read a green suite as agent quality is strongest.
 
 ---
 
@@ -372,6 +403,10 @@ worth attacking. Chapter 12 does not introduce the boundary — it attacks the o
 The safety floor therefore sits in an early core chapter rather than a deferrable one, which is the
 property that makes the cut order safe.
 
+**Amended by D-019.** Chapter 7 comes off the deferral list — the order is Ch 3 → Ch 10 → Ch 14,
+and it ends there. Its old table row read "only cut this if you are abandoning the course," which
+was the misclassification announcing itself.
+
 ---
 
 ### D-018 · Trace labeling is human-only, enforced structurally
@@ -396,3 +431,94 @@ a subtler costume.
 **Saturation, made concrete.** 60 traces is the floor, not the target. Continue until 10 consecutive
 traces produce no new failure mode. If that has not happened by 60, that is a real signal and the
 answer is to keep reading.
+
+---
+
+## Phase 0 — second review
+
+### D-019 · Chapter 7 moves to core — it was load-bearing twice over
+
+**Decided.** Chapter 7 is core. The deferral list is Ch 3 → Ch 10 → Ch 14 and nothing else. Core is
+eleven chapters at 79 h; the core path is ~85 h with setup, which consumes most of the schedule's
+slack and is worth it.
+
+**Why — two dependencies D-017 failed to declare.**
+
+First, D-014 puts the LangGraph port in Chapter 7, and D-017 makes Chapter 12 uncuttable. Chapter
+12's approval flow is asynchronous by design — durable checkpoints, resume from persisted state —
+and that machinery arrives in Chapter 7. Cutting Ch 7 would mean hand-rolling interrupt-and-resume
+inside the security chapter, at week nine, tired: the exact decision-under-pressure failure D-017
+exists to prevent, hiding one layer down.
+
+Second, Chapter 7 owns the CTX defect class: 110 of 300 positives at full corpus (36.7%), 27 of 75
+on the dev slice. Cut the chapter and more than a third of the positive corpus is structurally
+unaddressable — and the damage is worse than a lower recall number. Recall becomes uninterpretable,
+because a miss on a CTX PR no longer distinguishes "the agent cannot do this" from "the capability
+was never built." A metric that cannot attribute its own failures is the kind of metric this course
+exists to teach you not to ship. (Chapter 8's trace pool also draws on Chapters 4–7, so the
+error-analysis chapter thins if 7 goes.)
+
+**The tell, in hindsight.** D-017's own table row for Ch 7 read "only cut this if you are
+abandoning the course." A deferral list containing an entry you are never allowed to take is a
+classification error announcing itself.
+
+**Alternative considered — rebalance the corpus instead.** Drop the CTX share and spec a
+no-framework fallback for Ch 12's approval flow. Rejected on both halves. Shrinking CTX shrinks the
+one defect class that justifies an agentic reviewer over a linter pipeline — MECH belongs to
+checkers, SEM is single-file provable, CTX is where retrieval and cross-file reasoning earn their
+keep. And the no-framework fallback is precisely the hand-rolled-at-week-nine work the first
+dependency rules out.
+
+**Where the flex went instead.** Chapter 7's internal scope is the trim point: the bake-off is
+specced as "at least two" of four retrieval strategies, and under pressure two is what runs. The
+load-bearing spine — CTX capability and the framework port — is not the part that flexes.
+
+**Cost, stated plainly.** The core path goes 75 h → ~83 h plus setup, eight weeks only when weeks
+5–8 run at the top of the 10–12 h range, otherwise eight weeks of chapters and a short ninth. The
+old plan's slack paid for this. Right trade; gone slack.
+
+---
+
+### D-020 · The scoring rule: regressions only, base revision as the oracle
+
+**Decided.** A scoreable finding is a defect *introduced by the diff*: absent at base, present at
+head. Everything the harness scores — TP, FP, recall, the headline FP rate — is defined against
+that rule.
+
+**Diff-scoping was implicit in D-007; it is now the stated ground of the FP metric.** Raised in
+review: the service deliberately contains pre-existing mess — that is what makes Chapter 5's triage
+lesson real — so on a clean PR, a finding about surrounding code can be factually true. "Finding on
+a clean PR = false positive" is only coherent if review scope is the change, not the codebase. It
+is: the product promise is "is this PR safe to merge," and ground truth can only adjudicate what
+was injected. Findings about un-diffed, un-injected code are unscoreable, and unscoreable findings
+emitted in the findings channel count against precision.
+
+**Touched-but-already-bad lines get a mechanical rule, not a judgment call.** The genuinely
+ambiguous case review asked about: the diff edits a line whose defect predates the PR. The rule is
+the base revision as oracle. For checkers, Chapter 5's baseline suppression *is* this rule — any
+finding that also fires on base is pre-existing by construction. For agent findings, the proof
+protocol gains a third leg: the proving test must fail on head, pass on the fix, **and not fail on
+base**. A test that also fails on base has proven a pre-existing defect, not a regression. A test
+that cannot even collect on base because the symbol is new counts as absent-at-base; Chapter 4
+owns the wrong-reason edge cases.
+
+**Pre-existing defects on touched lines are routed, not destroyed.** Suppressing true information
+teaches the agent nothing good, so the report schema carries a second, unscored channel —
+`advisory` — for pre-existing issues on lines the diff touched. Advisory findings do not gate, do
+not count toward precision or recall, and are capped per review, because the advisory channel is
+where reviewer trust erodes if it becomes a firehose. The findings channel is the product; the
+advisory channel is a courtesy.
+
+**CTX anchoring.** Contextual defects manifest away from the diff — the stale caller is un-diffed
+code. A finding's *cause* must cite at least one changed line; its manifestation site may be
+anywhere. `ground_truth.json` records both (`file`/`line` of injection, `reachable_from`).
+
+**Alternative — strict two-channel-less scoring.** Treat any report of a pre-existing defect as a
+plain false positive and ship a single findings channel. Simpler, and defensible: the reviewer was
+asked about the PR. Rejected because it trains the system (and its operator) to discard true
+information silently, and because the advisory channel is exactly where the compliance port lands —
+"control 90% implemented, pre-existing" is an advisory finding, and the muted-bot failure mode is
+its cap being wrong.
+
+**Amends D-007. Adds the third proof leg to Chapter 4 and names what Chapter 5's baseline
+implements.**

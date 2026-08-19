@@ -71,7 +71,9 @@ not enough pain to justify an abstraction; six chapters is.
 
 Checked against current releases rather than memory: the Anthropic Python SDK is at **v0.121.0**
 (August 2026) and ships `client.beta.messages.tool_runner`, which handles the agentic loop, error
-wrapping, type safety, and automatic compaction when token usage crosses a threshold.
+wrapping, and type safety. (Its client-side automatic compaction has since been deprecated in
+favor of server-side context editing — D-003, amendment. That trims one line from the runner's
+column without changing the three-way shape.)
 
 That puts a rung on the ladder that your brief's binary does not have:
 
@@ -108,10 +110,12 @@ Your §3 checklist has 43 distinct items and demands the complete Hamel Husain /
 curriculum. Eight chapters cannot hold it without gutting Modules 2 and 3 — error analysis and
 CI/CD — which are the parts you said matter more.
 
-**Instead of cutting the syllabus, I am declaring a critical path.** Ten core chapters form a
-complete, coherent course that stands alone. Four depth chapters are marked deferrable — to be
+**Instead of cutting the syllabus, I am declaring a critical path.** Eleven core chapters form a
+complete, coherent course that stands alone. Three depth chapters are marked deferrable — to be
 pushed to weeks 9–10 if your pace slips, not dropped. Deferral order is given in §2. Every
-deferrable chapter is one whose absence degrades depth rather than leaving a hole in the spine.
+deferrable chapter is one whose absence degrades depth rather than leaving a hole in the spine —
+a test Chapter 7 failed on review: it owned a third of the positive corpus and the checkpointing
+Chapter 12 stands on, so it moved to core (D-019).
 
 ### 1.8 The corpus is sized from a power calculation
 
@@ -148,15 +152,15 @@ Your budget: 8 weeks at 10–12 h/week = **80–96 hours**.
 
 | Track | Chapters | Hours |
 |---|---|---|
-| **Core 10** | 1, 2, 4, 5, 6, 8, 9, 11, 12, 13 | 71 |
-| **Depth 4** | 3, 7, 10, 14 | 25 |
+| **Core 11** | 1, 2, 4, 5, 6, 7, 8, 9, 11, 12, 13 | 79 |
+| **Depth 3** | 3, 10, 14 | 17 |
 | *Chapters subtotal* | | *96* |
 | Appendix A — self-assessment | | 3 |
 | Appendix B — point it at a real repo | | 4 |
 | PORTING.md | | 1 |
 | **Everything** | | **104** |
 
-`71 + 25 = 96` is chapters only. The remaining 8 hours are the two appendices and `PORTING.md`,
+`79 + 17 = 96` is chapters only. The remaining 8 hours are the two appendices and `PORTING.md`,
 giving 104. Unhelpfully, the chapter subtotal (96) is numerically identical to the top of your
 budget (8 weeks × 12 h = 96), which makes the table read as though something does not add up. The
 subtotal row above is there to break that collision.
@@ -164,9 +168,12 @@ subtotal row above is there to break that collision.
 **All fourteen does not fit in eight weeks.** 104 hours against a 96-hour ceiling, and that ceiling
 assumes you never lose an evening to a broken Docker daemon. Two honest options:
 
-- **Core path, 8 weeks (~75 h).** Chapters 1, 2, 4, 5, 6, 8, 9, 11, 12, 13 plus Appendix A and
-  PORTING.md. Complete spine, real numbers, portfolio-ready. Roughly 9.5 h/week, with slack.
-- **Everything, 10 weeks (~104 h).** Same pace, two more weeks.
+- **Core path (~85 h including setup).** Chapters 1, 2, 4, 5, 6, 7, 8, 9, 11, 12, 13 plus
+  Appendix A and PORTING.md. Complete spine, real numbers, portfolio-ready. Honest pacing: eight
+  weeks only if weeks 5–8 run at the top of your 10–12 h range; otherwise eight weeks of chapters
+  and a short ninth for Appendix A and PORTING.md. The old 75-hour version's slack is what paid
+  for Chapter 7's promotion — the right trade, but it is spent.
+- **Everything, 10 weeks (~104 h).** Adds Ch 3, Ch 10, and Ch 14 in weeks 9–10.
 
 I recommend the core path with the depth chapters queued for weeks 9–10.
 
@@ -184,6 +191,21 @@ the agent has any capability worth attacking. Chapter 12 does not *introduce* th
 **attacks** the one Chapter 2 built. That ordering is deliberate and it means the safety floor sits
 in a core chapter that comes early, not in one that could be deferred.
 
+**Chapter 7 is core — reclassified after review.** The first version of this plan listed it as the
+last deferral, with a row that read "only cut this if you are abandoning the course." A deferral
+list containing an entry you are never allowed to take is a misclassification announcing itself,
+and review found the two dependencies underneath it. First: Ch 12's asynchronous approval flow
+stands on LangGraph's durable checkpointing, which arrives in Ch 7 — cut it and the chapter that
+cannot be cut loses its foundation, leaving you hand-rolling interrupt-and-resume inside the
+security chapter at week nine, tired. Second: Ch 7 owns the CTX defect class — 110 of 300
+positives at full corpus, 27 of 75 on the dev slice. Cut it and a third of the positive corpus is
+structurally unaddressable, which is worse than a lower recall number: it is an uninterpretable
+one, because a CTX miss no longer distinguishes "the agent cannot do this" from "the capability
+was never built." A metric that cannot attribute its own failures is the kind this course exists
+to teach you not to ship. Ch 7's one sanctioned trim under time pressure is internal — the
+retrieval bake-off runs two strategies instead of four. The spine, CTX capability plus the
+framework port, does not flex. (D-019.)
+
 **Decision checkpoint: end of week 4.** After Chapter 6 you will have four weeks of measured pace
 rather than an estimate. Compare hours actually spent against the 37 h the week-by-week table
 budgets through week 4, then pick a lane and write it in `PROGRESS.md`:
@@ -192,7 +214,7 @@ budgets through week 4, then pick a lane and write it in `PROGRESS.md`:
 |---|---|
 | ≤ 40 | On plan. Core path, depth chapters in weeks 9–10. |
 | 41–50 | Cut one depth chapter (Ch 3). Core path unchanged. |
-| > 50 | Cut Ch 3 and Ch 10, and extend to 10 weeks. Do not compress Ch 8, 9, 11, or 12. |
+| > 50 | Cut Ch 3 and Ch 10; weeks 9–10 absorb the overflow, plus Ch 14 if it fits. Do not compress Ch 8, 9, 11, or 12; Ch 7 trims only at the bake-off (two strategies, not four). |
 
 Deciding at week 4 costs nothing and removes the week-seven temptation to cut whatever is next on
 the calendar, which is how security chapters get dropped.
@@ -204,20 +226,25 @@ If you have to drop rather than defer, drop in this order and here is what each 
 | 1st | Ch 3 — Langfuse | Nothing functional. JSONL traces carry the course. You lose the production observability story and the granularity debate. Cheapest cut by a wide margin. |
 | 2nd | Ch 10 — subsystem/trajectory evals | Retrieval recall and trajectory scoring. Grounding checks survive because Chapter 5 needs them anyway. You lose the "agents pass far more often on final-output scoring" lesson, which is a genuinely important one. |
 | 3rd | Ch 14 — cost and upgrade drill | The Pareto frontier still gets built in Ch 13; you lose cost profiling, caching, cascades, and the model-upgrade drill. Painful, because cost work is what makes an agent shippable. |
-| 4th | Ch 7 — cross-file reasoning + framework | The entire contextual defect class and the framework comparison. Only cut this if you are abandoning the course. |
+
+The list ends there.
 
 ### Week-by-week, core path
 
 | Week | Work | Hours |
 |---|---|---|
 | 1 | Setup + Ch 1 (SPEC, world v0, hand-rolled loop) | 9 |
-| 2 | Ch 2 (tools, permissions, sandbox) + start Ch 4 | 9 |
-| 3 | Finish Ch 4 (hypothesis and proof) + start Ch 5 | 9 |
-| 4 | Finish Ch 5 (checkers and policy) + Ch 6 (world v1) | 10 |
-| 5 | Ch 8 (error analysis) + start Ch 9 | 10 |
-| 6 | Finish Ch 9 (evaluators) + Ch 11 (CI/CD) | 10 |
-| 7 | Ch 12 (adversarial and governance) + start Appendix A | 10 |
-| 8 | Ch 13 (frontier and improve loop) + PORTING.md + finish Appendix A | 10 |
+| 2 | Ch 2 (tools, permissions, sandbox) + start Ch 4 | 10 |
+| 3 | Finish Ch 4 (hypothesis and proof) + start Ch 5 | 10 |
+| 4 | Finish Ch 5 (checkers and policy) + Ch 6 (world v1) — **checkpoint** | 8 |
+| 5 | Ch 7 (cross-file reasoning, framework) + start Ch 8 | 11 |
+| 6 | Finish Ch 8 (error analysis) + Ch 9 (evaluators) | 10 |
+| 7 | Ch 11 (CI/CD) + start Ch 12 | 11 |
+| 8 | Finish Ch 12 (adversarial) + Ch 13 (frontier and improve loop) | 12 |
+| 9 — short | Appendix A + PORTING.md | 4 |
+
+Week 8 is the hottest in the plan — 12 hours and the course's two densest chapters. If any earlier
+week comes in light, pull Appendix A forward rather than letting week 8 carry all of it.
 
 Chapter 8 is the one you will be tempted to skip because it produces the least code. It is the
 highest-value chapter in the course. Do not skip Chapter 8.
@@ -330,11 +357,15 @@ you when the thing you are hunting is rare.
 **You build.** The heart of the system. The agent forms a hypothesis about a semantic defect,
 writes a test intended to expose it, runs that test in the Chapter 2 sandbox against HEAD, generates
 a candidate fix, runs the test again against the fixed tree, and keeps the finding **only if the
-test fails on HEAD and passes on the fix**. Everything else is discarded silently.
+test fails on HEAD, passes on the fix, and does not fail on base** — the third leg is what
+separates a regression this PR introduced from a defect that was always there (D-020). Everything
+else is discarded silently or routed to the advisory channel.
 
 The failure you will meet within the first hour: a test that fails for the wrong reason. Import
 error, syntax error, wrong fixture, a typo in the assertion. It fails on HEAD and it passes on the
-fix, and it proves nothing. Handling that is most of the chapter.
+fix, and it proves nothing. Handling that is most of the chapter. The base leg has its own edge
+case: a test that cannot even collect on base because the symbol is new counts as absent-at-base,
+not as a failure.
 
 **Capability added.** Every semantic finding Ratchet emits carries a runnable artifact that
 demonstrates the defect. This is the vertical slice: `ratchet review` runs end to end on world v0's
@@ -359,13 +390,17 @@ different eval harness, and scope discipline is what keeps this one measurable.
 normalized into one `Finding` schema. Then the noise problem, on purpose: run everything across the
 whole repo and watch it produce roughly 400 findings that nobody will ever read. Then triage —
 diff-scoping, baseline suppression of pre-existing violations, deduplication — and watch it drop to
-single digits.
+single digits. The baseline is not a heuristic; it is the scoring rule implemented for checkers:
+anything that also fires on the base revision is pre-existing by construction, and only regressions
+the diff introduced belong in the findings channel (D-020).
 
 Then `policy.yaml`: rule id, description, severity, how it is checked, positive and negative
 examples. The examples are not documentation; they are fixtures, so the policy is executable and a
 rule that stops matching its own examples fails CI. Finally the report format, where every finding
 carries an evidence pointer: `file:line`, the checker that produced it or the failing test that
-proves it, and a severity.
+proves it, and a severity. The report carries two channels: scored `findings`, and a capped,
+unscored `advisory` channel for pre-existing issues on lines the diff touched — a courtesy, never
+gated, never counted in precision or recall (D-020).
 
 **Capability added.** Ratchet distinguishes what this diff broke from what was already broken, and
 every finding is traceable from rule → check → artifact.
@@ -402,7 +437,7 @@ class, and if it clears 60% your generator has a lexical tell and your numbers a
 
 ---
 
-#### Chapter 7 — Cross-file reasoning, context, and the framework  · 8 h · **deferrable (4th)**
+#### Chapter 7 — Cross-file reasoning, context, and the framework  · 8 h · **core**
 
 **Objective.** The defects that only exist between files, and the first point where the harness
 you hand-rolled starts costing more than it saves.
@@ -438,7 +473,8 @@ the async requirement, that is a finding to report in `ALTERNATIVES.md`, not one
 
 **Design debate.** *Framework vs. raw SDK vs. the SDK's own tool runner*, three-way and measured.
 *Getting code into context*, decided by the bake-off rather than by taste. *Context management as a
-review grows* — compaction, sub-agents, external state. And *single agent vs. multi-agent vs. plain
+review grows* — server-side context editing, external state, sub-agents; the SDK's client-side
+compaction is deprecated (D-003, amendment), so the chapter teaches the current path. And *single agent vs. multi-agent vs. plain
 workflow*, including the case against multi-agent: context fragmentation, no shared state, a cost
 multiplier, and traces that become much harder to read at exactly the moment you need them.
 
@@ -458,7 +494,9 @@ to prove that to you by hand.
 
 **You build.** First, the argument for why "let the agent evaluate everything" fails — demonstrated
 on your own traces, not asserted. Then an annotation interface built for a human: one trace at a
-time, keyboard-driven, diff rendered next to the finding, and a single free-text box. Then you
+time, keyboard-driven, diff rendered next to the finding, and a single free-text box. The tool
+reads the Chapter 2 JSONL sink directly, never Langfuse, so cutting Chapter 3 cannot break the one
+chapter the course cannot lose. Then you
 open-code **60+ traces** from Chapters 4 through 7: read the whole trace, note **the first** failure
 in plain language, move on. Then axial coding — group the notes into 5–8 binary failure modes, each
 with a definition, a positive example, a negative example, and a stated boundary. Scan for
@@ -804,7 +842,7 @@ decision entry in `DESIGN_DECISIONS.md`.
 | Framework vs. raw SDK, and what the abstraction costs | Ch 7 | Ch 1 |
 | Structured output: tool-call schemas vs. JSON mode vs. parse-and-retry | Ch 1 | Ch 5 |
 | Getting code into context: whole-file / chunked / symbol-graph / agentic search | Ch 7 | Ch 14 (cost side) |
-| Context management as a review grows: compaction, sub-agents, external state | Ch 7 | Ch 14 |
+| Context management as a review grows: server-side context editing, external state, sub-agents | Ch 7 | Ch 14 |
 | LLM judge vs. code assertion vs. human review — cost and reliability per finding type | Ch 9 | Ch 10, Ch 11 |
 | Offline suites vs. online monitoring, and why offline suites decay | Ch 11 | Ch 6 |
 | Precision vs. recall, and who pays — **quantified, not asserted** | Ch 13 | Ch 9 |
@@ -828,7 +866,7 @@ Checked against current releases in August 2026. Anything that surprised me is i
 |---|---|---|
 | Python | 3.12+ | Your machine has 3.13.3. The world service targets 3.12 for realism. |
 | Dependencies | `uv` | You have 0.7.5; `make setup` will check for a floor. |
-| Model access | `anthropic` v0.121.x | Ships `client.beta.messages.tool_runner` with automatic compaction — this is the middle rung in the Ch 7 framework debate. |
+| Model access | `anthropic` v0.121.x | Ships `client.beta.messages.tool_runner` — the middle rung in the Ch 7 framework debate. Its client-side compaction is deprecated; context length is managed server-side via context editing (D-003, amendment). |
 | Schemas | Pydantic v2, everywhere | Findings, traces, policy, tool arguments, ground truth. |
 | Tests and eval gating | `pytest` | Acceptance tests replay recorded model responses so they are free and deterministic. |
 | Checkers | `ruff`, `mypy`, `bandit`, `coverage`, `ast` | Ch 5. Versions pinned, because a checker upgrade changes your baseline. |

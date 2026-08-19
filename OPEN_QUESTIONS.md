@@ -1,6 +1,7 @@
 # Open questions
 
-**Status: four resolved, four proceeding on default.** Chapter 1 is unblocked.
+**Status: resolved through two review rounds. Three defaults still standing (#3, #7, #8), none of
+which bite before Chapter 8.** Chapter 1 is unblocked.
 
 Resolved answers are recorded in full in `DESIGN_DECISIONS.md`; this file is the index and the
 record of what is still outstanding.
@@ -15,8 +16,11 @@ record of what is still outstanding.
 | 2 | Framework for Ch 7 | LangGraph, justified by Ch 12's approval flow being **asynchronous** — stated so it can be falsified. | D-014 |
 | 4 | Does Ratchet ship fixes? | No. Generated internally to validate the test, never surfaced. Fix quality has no free ground truth. | D-015 |
 | 6 | Sandbox runtime | Both modes, flag-gated. Strict for teaching, pooled for the harness, **strict always for the adversarial suite**. Runtime detected: Docker Desktop. | D-016 |
-| — | Cut order | Fixed now: Ch 3 → Ch 10 → Ch 14 → Ch 7. Ch 12 never cut. Week-4 decision checkpoint. | D-017 |
-| — | Trace labeling | Human-only, enforced structurally — the annotation tool has no model integration. | D-018 |
+| — | Cut order | Ch 3 → Ch 10 → Ch 14, and it ends there. Ch 7 and Ch 12 are never cut. Week-4 decision checkpoint. | D-017, D-019 |
+| — | Trace labeling | Human-only, enforced structurally — the annotation tool has no model integration, and it reads the JSONL sink so cutting Ch 3 cannot break it. | D-018, D-004 |
+| 5 | Cassettes in acceptance tests | Accepted, with two conditions: `make record` + cassette provenance (model id, prompt hash) with stated re-record triggers; green-≠-good restated in every README from Ch 8 on. | D-010 |
+| — | Ch 7 classification | Moved to core — load-bearing for Ch 12's checkpointing and for 36.7% of the positive corpus. Core is 11 chapters; depth is Ch 3, 10, 14. | D-019 |
+| — | FP attribution | Diff-scoping made explicit: scoreable findings are regressions (absent at base, present at head), base revision is the oracle for touched-but-already-bad lines, pre-existing issues route to a capped unscored advisory channel. | D-020 |
 
 Three corrections were adopted from review rather than merely accepted, and are worth noting because
 they changed the design rather than confirming it:
@@ -30,25 +34,22 @@ they changed the design rather than confirming it:
   patch-quality corpus, reintroducing exactly the hand-labeling cost that made code review the right
   domain in the first place.
 
+The second round added three more:
+
+- **Chapter 7 was misclassified**, and the tell was in my own table — a deferral entry marked "only
+  cut if abandoning the course" is not a deferral entry (D-019).
+- **The FP metric rested on an unstated assumption.** Diff-scoping is now the stated ground of the
+  headline number, and the touched-but-already-bad case has a mechanical rule instead of an
+  accident of implementation (D-020).
+- **D-003 was stale about compaction.** The SDK's client-side compaction is deprecated in favor of
+  server-side context editing — verified against the platform docs and amended, which is the
+  fetch-current-docs rule catching drift in the very entry that recorded the last drift.
+
 ---
 
 ## Proceeding on default — override any of these before the relevant chapter
 
-You did not object to these, so I am treating silence as acceptance. Only one bites immediately.
-
-### 5. Acceptance tests replay recorded model responses — **bites at Chapter 1**
-
-Model calls in acceptance tests are served from committed cassettes, with a `--live` flag for real
-calls. An acceptance test is a specification; one that is slow, costs money, and returns different
-answers each run is a bad specification.
-
-**The consequence to expect rather than discover:** a chapter can go green while the agent is still
-bad. Acceptance tests verify your harness handles a given model response correctly — not that the
-model behaves well. Agent quality is measured by `make eval` against the corpus, which is the right
-place for it. Recorded as D-010.
-
-This is the only default that affects Chapter 1. If you want live calls in acceptance tests, say so
-now.
+Nothing here bites before Chapter 8.
 
 ### 3. Annotation interface is a small local web app — bites at Chapter 8
 
@@ -59,8 +60,9 @@ than launch speed. No model integration, per D-018.
 ### 7. Appendix B targets `httpx` plus one repo of your own — bites at Appendix B
 
 Real test suite, type annotations, non-trivial dependency graph, no database required. If you have a
-repository in mind, especially one of your own, tell me any time before Appendix B and I will
-pre-build the harness adapter.
+repository in mind — especially one of your own with a real test suite — name it whenever you
+like; before Appendix B is built is all that matters, and the adapter is cheaper to build once
+than twice.
 
 ### 8. Repository stays public — bites whenever you decide
 
