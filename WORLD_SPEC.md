@@ -351,6 +351,35 @@ interval.
 
 ---
 
+## 6a. The development slice
+
+`world/slices/dev150.json` — a committed manifest of PR ids, not a runtime sampler. Generated once,
+hashed, and version-controlled, so any two runs against `--slice dev150` are comparable by
+construction rather than by discipline.
+
+| Class | Full corpus | dev150 |
+|---|---|---|
+| MECH | 60 | 15 |
+| SEM | 130 | 33 |
+| CTX | 110 | 27 |
+| DEC | 150 | 37 |
+| CLEAN | 150 | 38 |
+| **Total** | **600** | **150** |
+| *negatives* | *300* | *75* |
+
+Proportional stratification, not uniform sampling. Uniform draws would let class balance drift
+between runs and would throw away the false-positive resolution §6 sized the corpus to buy.
+
+**Aggregate false positive rate only.** At 75 negatives the per-class cells are single digits, where
+the §6 refuse-to-print rule would fire on every run — and a guardrail that fires constantly is one
+you learn to disable. Per-class rates print at full-corpus gates and nowhere else.
+
+**Resolution, stated honestly.** 75 negatives gives an aggregate FP half-width of ±6.8pp against the
+full corpus's ±3.4pp. Enough to see a real move; not enough to call a two-point difference. The
+harness prints the interval alongside every estimate, on both slice sizes.
+
+---
+
 ## 7. Smoke report
 
 `make world-report` after generation. Fails loudly rather than warning quietly.
